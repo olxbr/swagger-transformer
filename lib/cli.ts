@@ -2,7 +2,7 @@
 
 import commander from 'commander';
 import { spawnSync } from 'child_process';
-import { dirname, resolve } from 'path';
+import { resolve } from 'path';
 
 const packageJson = require('../package.json');
 
@@ -26,15 +26,15 @@ commander.program
 
     const path = resolve(ROOT_DIR, app);
 
-    const result = spawnSync('node_modules/.bin/ts-node', [path], {
-      cwd: dirname(require.main?.path ?? ''),
+    const result = spawnSync('ts-node', [path], {
+      cwd: resolve(ROOT_DIR, 'node_modules', '.bin'),
       env: {
         ...process.env,
         SG_TRANSFORMER_CLI_PROCESS_DIR: ROOT_DIR,
       },
     });
 
-    const err = result.stderr.toString();
+    const err = result.stderr?.toString();
     if (err) {
       logger.error(err);
       return;
