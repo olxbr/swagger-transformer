@@ -18,6 +18,7 @@ import { mergeDeep } from '../../utils';
 
 type GenerateOptions = {
   fileName?: string;
+  ext?: 'yaml' | 'json';
   configs?: SwaggerSettings;
 };
 
@@ -30,7 +31,7 @@ export class SwaggerGenerate {
   }
 
   private configs(): SwaggerSettings | undefined {
-    const fileName = 'sg-transformer.json';
+    const fileName = 'sg-transformer-config.json';
     const path = `${SG_TRANSFORMER_CLI_PROCESS_DIR}/${fileName}`;
 
     if (!existsSync(path)) {
@@ -61,7 +62,8 @@ export class SwaggerGenerate {
   }
 
   public generate({
-    fileName = 'sg-transformer.yaml',
+    fileName = 'sg-transformer',
+    ext = 'yaml',
     configs,
   }: GenerateOptions) {
     try {
@@ -121,11 +123,16 @@ export class SwaggerGenerate {
         paths,
       };
 
-      const yaml = stringify(outputAsJson);
+      const stringifyOutputFile = ext === 'json' ? JSON.stringify : stringify;
+      const output = stringifyOutputFile(outputAsJson);
 
-      writeFileSync(`${SG_TRANSFORMER_CLI_PROCESS_DIR}/${fileName}`, yaml, {
-        encoding: 'utf-8',
-      });
+      writeFileSync(
+        `${SG_TRANSFORMER_CLI_PROCESS_DIR}/${fileName}.${ext}`,
+        output,
+        {
+          encoding: 'utf-8',
+        }
+      );
 
       return outputAsJson;
     } catch (err) {

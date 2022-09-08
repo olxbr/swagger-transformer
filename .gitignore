@@ -1,5 +1,4 @@
 node_modules
 dist
 
-sg-transformer.yaml
-sg-transformer.json
+sg-transformer-config.json
