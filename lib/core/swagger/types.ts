@@ -101,16 +101,16 @@ export type SwaggerPaths = {
 };
 
 export type SwaggerSettings = {
-  openapi: string;
-  info: {
-    title: string;
-    version: string;
+  openapi?: string;
+  info?: {
+    title?: string;
+    version?: string;
     description?: string;
     contact?: {
       email: string;
     };
   };
   externalDocs?: ExternalDoc;
-  servers?: { url: string }[];
+  servers?: { url: string; description?: string }[];
   tags?: Tag[];
 };

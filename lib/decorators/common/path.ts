@@ -1,4 +1,5 @@
 import {
+  IS_PROD,
   METADATA_HTTP_DESCRIPTION,
   METADATA_HTTP_PATH,
   METADATA_HTTP_SUMMARY,
@@ -6,30 +7,34 @@ import {
 } from '../../core/constants';
 import { SwaggerGenerate } from '../../core/swagger/Swagger';
 import { VerbHTTP } from '../../core/types';
+import { before } from './before';
 
 type Options = {
   summary: string;
   description?: string;
 };
 
-const createPathDecorator = (verb: VerbHTTP) => {
+const createPathDecorator = function (verb: VerbHTTP) {
   return (path: string, options?: Options) =>
-    (_: object, __: string, descriptor: TypedPropertyDescriptor<any>) => {
-      Reflect.defineMetadata(METADATA_HTTP_PATH, path, descriptor.value);
-      Reflect.defineMetadata(METADATA_HTTP_VERB, verb, descriptor.value);
-      Reflect.defineMetadata(
-        METADATA_HTTP_SUMMARY,
-        options?.summary,
-        descriptor.value
-      );
-      Reflect.defineMetadata(
-        METADATA_HTTP_DESCRIPTION,
-        options?.description,
-        descriptor.value
-      );
+    before(
+      (_: object, __: string, descriptor: TypedPropertyDescriptor<any>) => {
+        Reflect.defineMetadata(METADATA_HTTP_PATH, path, descriptor.value);
+        Reflect.defineMetadata(METADATA_HTTP_VERB, verb, descriptor.value);
+        Reflect.defineMetadata(
+          METADATA_HTTP_SUMMARY,
+          options?.summary,
+          descriptor.value
+        );
+        Reflect.defineMetadata(
+          METADATA_HTTP_DESCRIPTION,
+          options?.description,
+          descriptor.value
+        );
 
-      SwaggerGenerate.init().addTarget(descriptor.value);
-    };
+        SwaggerGenerate.init().addTarget(descriptor.value);
+      },
+      () => IS_PROD
+    );
 };
 
 export const Get = createPathDecorator(VerbHTTP.GET);

@@ -2,7 +2,6 @@ import { stringify } from 'yaml';
 import { SwaggerPath, SwaggerPaths, SwaggerSettings } from './types';
 import { Storage } from './Storage';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
-import { SG_TRANSFORMER_CLI_PROCESS_DIR } from '../../utils';
 import {
   METADATA_AJV_BODY_SCHEMA,
   METADATA_AJV_QUERY_SCHEMA,
@@ -12,12 +11,14 @@ import {
   METADATA_HTTP_SUMMARY,
   METADATA_HTTP_VERB,
   METADATA_SWAGGER_TAGS,
+  SG_TRANSFORMER_CLI_PROCESS_DIR,
 } from '../constants';
 import { VerbHTTP } from '../types';
+import { mergeDeep } from '../../utils';
 
 type GenerateOptions = {
   fileName?: string;
-  path?: string;
+  configs?: SwaggerSettings;
 };
 
 export class SwaggerGenerate {
@@ -59,7 +60,10 @@ export class SwaggerGenerate {
     return this.storage.addTarget(target);
   }
 
-  public generate({ fileName = 'sg-transformer.yaml' }: GenerateOptions) {
+  public generate({
+    fileName = 'sg-transformer.yaml',
+    configs,
+  }: GenerateOptions) {
     try {
       const paths = this.storage
         .getTargets()
@@ -113,7 +117,7 @@ export class SwaggerGenerate {
         }, {} as SwaggerPaths);
 
       const outputAsJson = {
-        ...(this.configs() ?? {}),
+        ...mergeDeep({}, this.configs() ?? {}, configs ?? {}),
         paths,
       };
 
