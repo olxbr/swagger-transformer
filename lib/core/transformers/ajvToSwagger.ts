@@ -55,7 +55,7 @@ export class Ajv {
     if (!schema) return;
 
     const handleProperties = (properties: Record<string, AjvSchema>) =>
-      Object.keys(properties).reduce((acc, curr) => {
+      Object.keys(properties ?? {}).reduce((acc, curr) => {
         return {
           ...acc,
           [curr]: Ajv.toSwagger(properties[curr]),
@@ -102,7 +102,7 @@ export class Ajv {
 
         return {
           type: 'object',
-          properties: handleProperties(objSchema.properties),
+          properties: handleProperties(objSchema?.properties),
         };
       case 'array':
         const arrSchema = ajvSchema as ajvArray | ajvObject;
