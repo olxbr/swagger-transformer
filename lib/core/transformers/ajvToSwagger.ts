@@ -25,7 +25,11 @@ type ajvEnum = {
   enum: string[];
 };
 
-type ajvArrayItem = Record<string, AjvSchema> | AjvSchema;
+type ajvOneOf = {
+  oneOf: AjvSchema[];
+};
+
+type ajvArrayItem = Record<string, AjvSchema> | ajvOneOf | AjvSchema;
 
 type ajvArray = {
   type: string; // 'array'
@@ -54,13 +58,37 @@ export class Ajv {
   ): SwaggerSchema | undefined {
     if (!schema) return;
 
-    const handleProperties = (properties: Record<string, AjvSchema>) =>
+    const handleProperties = (
+      properties: Record<string, AjvSchema | AjvSchema[]>
+    ) =>
       Object.keys(properties ?? {}).reduce((acc, curr) => {
+        if (Array.isArray(properties[curr])) {
+          return {
+            ...acc,
+            [curr]: (properties[curr] as AjvSchema[]).map(Ajv.toSwagger),
+          };
+        }
+
         return {
           ...acc,
-          [curr]: Ajv.toSwagger(properties[curr]),
+          [curr]: Ajv.toSwagger(properties[curr] as AjvSchema),
         };
       }, {} as SwaggerSchema);
+
+    // const handleArrayItems = (items: Record<string, AjvSchema | AjvSchema[]>) =>
+    //   Object.keys(items).reduce((acc, curr) => {
+    //     if (Array.isArray(items[curr])) {
+    //       return {
+    //         ...acc,
+    //         [curr]: (items[curr] as AjvSchema[]).map(Ajv.toSwagger),
+    //       };
+    //     }
+
+    //     return {
+    //       ...acc,
+    //       [curr]: Ajv.toSwagger(items[curr] as AjvSchema),
+    //     };
+    //   }, {} as SwaggerSchema);
 
     const ajvSchema = clone(schema);
 
@@ -105,6 +133,7 @@ export class Ajv {
           properties: handleProperties(objSchema?.properties),
         };
       case 'array':
+        const reservedProperties = ['oneOf'];
         const arrSchema = ajvSchema as ajvArray | ajvObject;
 
         const isObjectType = arrSchema.items.type === 'object';
@@ -123,9 +152,19 @@ export class Ajv {
             },
           };
 
+        const hasReservedProperty = Object.keys(properties).find((p) =>
+          reservedProperties.includes(p)
+        );
+
+        const items = hasReservedProperty
+          ? handleProperties(
+              properties as Record<string, AjvSchema | AjvSchema[]>
+            )
+          : Ajv.toSwagger(properties as AjvSchema);
+
         return {
           type: 'array',
-          items: Ajv.toSwagger(properties as AjvSchema),
+          items,
         };
     }
   }

@@ -13,7 +13,7 @@ import {
   dogCreateSuccessSchema,
 } from './schemas/dog.create.schema';
 import { dogFindSchema } from './schemas/dog.find.schema';
-import { dogListSchema } from './schemas/dog.list.schema';
+import { dogListResponse, dogListSchema } from './schemas/dog.list.schema';
 
 export class DogControllerMocked {
   @Post('/dog', {
@@ -37,6 +37,11 @@ export class DogControllerMocked {
   @Get('/dog')
   @Tags('dog', 'another_tag')
   @ajvQuery(dogListSchema)
+  @ajvResponseSchema({
+    httpCode: 200,
+    schema: dogListResponse,
+    description: 'Ok',
+  })
   list() {
     return {};
   }
