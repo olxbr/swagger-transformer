@@ -12,7 +12,7 @@ import {
   dogCreateSchema,
   dogCreateSuccessSchema,
 } from './schemas/dog.create.schema';
-import { dogFindSchema } from './schemas/dog.find.schema';
+import { dogFindQuerySchema, dogFindSchema } from './schemas/dog.find.schema';
 import { dogListResponse, dogListSchema } from './schemas/dog.list.schema';
 
 export class DogControllerMocked {
@@ -30,6 +30,7 @@ export class DogControllerMocked {
   @Get('/dog/{name}')
   @Tags('dog')
   @ajvPath(dogFindSchema)
+  @ajvQuery(dogFindQuerySchema)
   find() {
     return {};
   }

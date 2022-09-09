@@ -7,3 +7,10 @@ export const dogFindSchema = {
   example: 'Khalice',
   required: true,
 };
+
+export const dogFindQuerySchema = {
+  name: 'age',
+  schema: {
+    type: 'number',
+  },
+};

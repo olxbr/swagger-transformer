@@ -1,4 +1,7 @@
-import { METADATA_AJV_QUERY_SCHEMA } from '../../core/constants';
+import {
+  METADATA_AJV_PATH_SCHEMA,
+  METADATA_AJV_QUERY_SCHEMA,
+} from '../../core/constants';
 import { SwaggerGenerate } from '../../core/swagger/Swagger';
 import { Ajv, AjvSchema } from '../../core/transformers/ajvToSwagger';
 import { parameter } from '../common/parameter';
@@ -27,7 +30,7 @@ export const ajvPath = function (...options: Options[]) {
     );
 
     Reflect.defineMetadata(
-      METADATA_AJV_QUERY_SCHEMA,
+      METADATA_AJV_PATH_SCHEMA,
       transformed,
       descriptor.value
     );

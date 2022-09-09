@@ -114,6 +114,13 @@ describe('ajvToSwagger Decorators', () => {
     expect(path!.parameters![0].required).toBe(true);
     expect(path!.parameters![0].explode).toBe(false);
 
+    expect(path!.parameters![1].in).toBe('query');
+    expect(path!.parameters![1].name).toBe('age');
+    expect(path!.parameters![1].schema).toEqual({
+      type: 'integer',
+      format: undefined,
+    });
+
     expect(path?.responses).toEqual({ '200': { description: 'Ok' } });
   });
 

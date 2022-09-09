@@ -4,6 +4,7 @@ import { Storage } from './Storage';
 import { writeFileSync, readFileSync, existsSync } from 'fs';
 import {
   METADATA_AJV_BODY_SCHEMA,
+  METADATA_AJV_PATH_SCHEMA,
   METADATA_AJV_QUERY_SCHEMA,
   METADATA_AJV_RESPONSES_SCHEMA,
   METADATA_HTTP_DESCRIPTION,
@@ -78,7 +79,11 @@ export class SwaggerGenerate {
             curr
           );
           const tags = Reflect.getMetadata(METADATA_SWAGGER_TAGS, curr);
-          const parameters = Reflect.getMetadata(
+          const parametersPath = Reflect.getMetadata(
+            METADATA_AJV_PATH_SCHEMA,
+            curr
+          );
+          const parametersQuery = Reflect.getMetadata(
             METADATA_AJV_QUERY_SCHEMA,
             curr
           );
@@ -91,13 +96,17 @@ export class SwaggerGenerate {
             curr
           );
 
+          const hasParameters = !!(parametersPath || parametersQuery);
+
           const pathInformations: { [k: string]: SwaggerPath } = {
             [verb]: {
               summary,
               description,
               operationId: (curr as Function)?.name,
               tags,
-              parameters,
+              parameters: hasParameters
+                ? [...(parametersPath ?? []), ...(parametersQuery ?? [])]
+                : undefined,
               ...(verb === VerbHTTP.GET ? {} : bodySchema),
               responses: responsesSchema ?? { 200: { description: 'Ok' } },
             },
