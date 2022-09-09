@@ -1,5 +1,7 @@
 import { clone } from '../../utils';
 import { SwaggerSchema } from '../swagger/types';
+import { isObjectType } from './common/object';
+import { hasOneOf } from './common/oneOf';
 
 type ajvString = {
   type: string; // 'string'
@@ -75,21 +77,6 @@ export class Ajv {
         };
       }, {} as SwaggerSchema);
 
-    // const handleArrayItems = (items: Record<string, AjvSchema | AjvSchema[]>) =>
-    //   Object.keys(items).reduce((acc, curr) => {
-    //     if (Array.isArray(items[curr])) {
-    //       return {
-    //         ...acc,
-    //         [curr]: (items[curr] as AjvSchema[]).map(Ajv.toSwagger),
-    //       };
-    //     }
-
-    //     return {
-    //       ...acc,
-    //       [curr]: Ajv.toSwagger(items[curr] as AjvSchema),
-    //     };
-    //   }, {} as SwaggerSchema);
-
     const ajvSchema = clone(schema);
 
     if (Array.isArray(ajvSchema.enum)) {
@@ -133,38 +120,25 @@ export class Ajv {
           properties: handleProperties(objSchema?.properties),
         };
       case 'array':
-        const reservedProperties = ['oneOf'];
         const arrSchema = ajvSchema as ajvArray | ajvObject;
 
-        const isObjectType = arrSchema.items.type === 'object';
-        const properties = isObjectType
-          ? (arrSchema.items as ajvObject).properties
-          : (arrSchema as ajvArray).items;
-
-        if (isObjectType)
+        if (isObjectType(arrSchema.items))
           return {
             type: 'array',
             items: {
               type: 'object',
-              properties: handleProperties(
-                properties as Record<string, AjvSchema>
-              ),
+              properties: handleProperties(arrSchema.items.properties),
             },
           };
 
-        const hasReservedProperty = Object.keys(properties).find((p) =>
-          reservedProperties.includes(p)
-        );
+        const itemsKey = Object.keys(arrSchema.items);
+        const hasReservedProperty = hasOneOf(itemsKey);
 
-        const items = hasReservedProperty
-          ? handleProperties(
-              properties as Record<string, AjvSchema | AjvSchema[]>
-            )
-          : Ajv.toSwagger(properties as AjvSchema);
+        const handler = hasReservedProperty ? handleProperties : Ajv.toSwagger;
 
         return {
           type: 'array',
-          items,
+          items: handler(arrSchema.items),
         };
     }
   }
