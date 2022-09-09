@@ -2,3 +2,5 @@ node_modules
 dist
 
 sg-transformer-config.json
+sg-transformer.yaml
+sg-transformer.json

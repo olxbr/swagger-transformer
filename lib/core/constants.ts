@@ -1,7 +1,3 @@
-const NODE_ENV = process.env.NODE_ENV;
-
-export const IS_PROD = NODE_ENV === 'prod' || NODE_ENV === 'production';
-
 export const SG_TRANSFORMER_CLI_PROCESS_DIR =
   process.env.SG_TRANSFORMER_CLI_PROCESS_DIR ?? process.cwd();
 

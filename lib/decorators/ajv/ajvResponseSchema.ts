@@ -1,7 +1,6 @@
-import { IS_PROD, METADATA_AJV_RESPONSES_SCHEMA } from '../../core/constants';
+import { METADATA_AJV_RESPONSES_SCHEMA } from '../../core/constants';
 import { SwaggerGenerate } from '../../core/swagger/Swagger';
 import { Ajv, AjvSchema } from '../../core/transformers/ajvToSwagger';
-import { before } from '../common/before';
 import { responseBodyApplicationJSON } from '../common/response';
 
 type Options = {
@@ -11,30 +10,27 @@ type Options = {
 };
 
 export const ajvResponseSchema = function (...options: Options[]) {
-  return before(
-    (_: any, __: string, descriptor: TypedPropertyDescriptor<any>) => {
-      const responses = options.reduce(
-        (acc, curr) => ({
-          ...acc,
-          ...responseBodyApplicationJSON(
-            curr.httpCode,
-            Ajv.toSwagger(curr.schema),
-            curr.description
-          ),
-        }),
-        {}
-      );
+  return (_: any, __: string, descriptor: TypedPropertyDescriptor<any>) => {
+    const responses = options.reduce(
+      (acc, curr) => ({
+        ...acc,
+        ...responseBodyApplicationJSON(
+          curr.httpCode,
+          Ajv.toSwagger(curr.schema),
+          curr.description
+        ),
+      }),
+      {}
+    );
 
-      const hasResponse = Object.keys(responses)?.length >= 1;
+    const hasResponse = Object.keys(responses)?.length >= 1;
 
-      Reflect.defineMetadata(
-        METADATA_AJV_RESPONSES_SCHEMA,
-        hasResponse ? responses : undefined,
-        descriptor.value
-      );
+    Reflect.defineMetadata(
+      METADATA_AJV_RESPONSES_SCHEMA,
+      hasResponse ? responses : undefined,
+      descriptor.value
+    );
 
-      SwaggerGenerate.init().addTarget(descriptor.value);
-    },
-    () => IS_PROD
-  );
+    SwaggerGenerate.init().addTarget(descriptor.value);
+  };
 };
