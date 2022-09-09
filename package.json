@@ -1,11 +1,11 @@
 {
   "name": "swagger-transformer",
-  "version": "1.0.8",
+  "version": "1.0.0",
   "main": "dist",
   "types": "dist",
   "license": "MIT",
   "author": "Jeconias Santos <https://github.com/jeconias>",
-  "repository": "https://github.com/Jeconias/swagger-transformer",
+  "repository": "https://github.com/olxbr/swagger-transformer",
   "keywords": [
     "swagger",
     "validators",
@@ -16,7 +16,8 @@
     "start": "nodemon -w lib -e .ts -x yarn build",
     "build": "tsc --project tsconfig.build.json",
     "test:watch": "jest --config ./__tests__/jest.config.json --watch",
-    "test:cov": "jest --config ./__tests__/jest.config.json --coverage"
+    "test:cov": "jest --config ./__tests__/jest.config.json --coverage",
+    "prepare": "yarn build"
   },
   "devDependencies": {
     "@types/jest": "^29.0.0",
