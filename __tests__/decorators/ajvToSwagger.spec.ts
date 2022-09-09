@@ -137,6 +137,7 @@ describe('ajvToSwagger Decorators', () => {
     expect(path!.parameters![0].name).toBe('breed');
     expect(path!.parameters![0].schema).toEqual({
       enum: ['Caramelo', 'Labrador'],
+      example: 'Caramelo',
     });
     expect(path!.parameters![0].description).toBe('Filter dogs by Breed');
     expect(path!.parameters![0].required).toBe(false);

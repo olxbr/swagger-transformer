@@ -25,6 +25,7 @@ type ajvBoolean = {
 type ajvEnum = {
   type?: string;
   enum: string[];
+  example?: string;
 };
 
 type ajvOneOf = {
@@ -111,6 +112,7 @@ export class Ajv {
 
         return {
           enum: enumSchema.enum,
+          example: enumSchema.example,
         };
       case 'object':
         const objSchema = ajvSchema as ajvObject;
