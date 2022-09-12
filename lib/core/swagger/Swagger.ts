@@ -1,7 +1,7 @@
 import { stringify } from 'yaml';
 import { SwaggerPath, SwaggerPaths, SwaggerSettings } from './types';
 import { Storage } from './Storage';
-import { writeFileSync, readFileSync, existsSync } from 'fs';
+import { writeFileSync, readFileSync, existsSync, mkdirSync } from 'fs';
 import {
   METADATA_AJV_BODY_SCHEMA,
   METADATA_AJV_PATH_SCHEMA,
@@ -13,6 +13,7 @@ import {
   METADATA_HTTP_VERB,
   METADATA_SWAGGER_TAGS,
   SG_TRANSFORMER_CLI_PROCESS_DIR,
+  SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR,
 } from '../constants';
 import { VerbHTTP } from '../types';
 import { mergeDeep } from '../../utils';
@@ -135,8 +136,15 @@ export class SwaggerGenerate {
       const stringifyOutputFile = ext === 'json' ? JSON.stringify : stringify;
       const output = stringifyOutputFile(outputAsJson);
 
+      const dirExists = existsSync(SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR);
+      if (!dirExists) {
+        mkdirSync(SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR, {
+          recursive: true,
+        });
+      }
+
       writeFileSync(
-        `${SG_TRANSFORMER_CLI_PROCESS_DIR}/${fileName}.${ext}`,
+        `${SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR}/${fileName}.${ext}`,
         output,
         {
           encoding: 'utf-8',

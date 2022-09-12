@@ -1,3 +1,6 @@
+export const SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR =
+  process.env.SG_TRANSFORMER_CLI_PROCESS_OUTPUT_DIR ?? process.cwd();
+
 export const SG_TRANSFORMER_CLI_PROCESS_DIR =
   process.env.SG_TRANSFORMER_CLI_PROCESS_DIR ?? process.cwd();
 

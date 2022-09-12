@@ -4,3 +4,5 @@ dist
 sg-transformer-config.json
 sg-transformer.yaml
 sg-transformer.json
+
+yarn.lock
